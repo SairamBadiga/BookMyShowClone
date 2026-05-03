@@ -16,24 +16,23 @@
         <module>CatelogServices</module>
         <module>CommonLib</module>
     </modules>
-    <dependencyManagement>
-        <dependencies>
+<!--    <dependencyManagement>-->
+<!--        <dependencies>-->
 
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-dependencies</artifactId>
-                <version>3.2.0</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
+<!--            <dependency>-->
+<!--                <groupId>org.springframework.boot</groupId>-->
+<!--                <artifactId>spring-boot-dependencies</artifactId>-->
+<!--                <type>pom</type>-->
+<!--                <scope>import</scope>-->
+<!--            </dependency>-->
 
 
-            <dependency>
-                <groupId>com.badiga</groupId>
-                <artifactId>common-lib</artifactId>
-                <version>1.0</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
+<!--&lt;!&ndash;            <dependency>&ndash;&gt;-->
+<!--&lt;!&ndash;                <groupId>com.badiga</groupId>&ndash;&gt;-->
+<!--&lt;!&ndash;                <artifactId>common-lib</artifactId>&ndash;&gt;-->
+<!--&lt;!&ndash;                <version>1.0</version>&ndash;&gt;-->
+<!--&lt;!&ndash;            </dependency>&ndash;&gt;-->
+<!--        </dependencies>-->
+<!--    </dependencyManagement>-->
 
 </project>

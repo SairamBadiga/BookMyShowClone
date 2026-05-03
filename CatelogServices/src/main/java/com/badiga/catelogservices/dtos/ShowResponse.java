@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Getter @Setter
 @Builder
 public class ShowResponse {
-    private Long id;
+    private Integer id;
     private String movieName;
     private String theatre;
     private String city;

@@ -1,85 +1,44 @@
-#name: CI-CD
-#
-#on:
-#  push:
-#    branches: [ "master" ]
-#
-#jobs:
-#  build:
-#    runs-on: ubuntu-latest
-#
-#    steps:
-#      - name: Checkout
-#        uses: actions/checkout@v4
-#
-#      # 🔹 Build Java project
-#      - name: Set up Java
-#        uses: actions/setup-java@v4
-#        with:
-#          distribution: temurin
-#          java-version: 17
-#
-#      - name: Build with Maven
-#        run: mvn clean install -DskipTests
-#
-#      # 🔹 Configure AWS
-#      - name: Configure AWS credentials
-#        uses: aws-actions/configure-aws-credentials@v4
-#        with:
-#          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-#          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
-#          aws-region: ap-south-1
-#
-#      # 🔹 Login to ECR
-#      - name: Login to Amazon ECR
-#        run: |
-#          aws ecr get-login-password --region ap-south-1 \
-#          | docker login --username AWS --password-stdin 768396679030.dkr.ecr.ap-south-1.amazonaws.com
-#
-#      # 🔹 Build Docker image
-#      - name: Build Docker image
-#        run: docker build -t catalog-service ./CatelogServices
-#
-#      # 🔹 Tag image
-#      - name: Tag Docker image
-#        run: docker tag catalog-service:latest 768396679030.dkr.ecr.ap-south-1.amazonaws.com/catalog_service:latest
-#
-#      # 🔹 Push to ECR
-#      - name: Push to ECR
-#        run: docker push 768396679030.dkr.ecr.ap-south-1.amazonaws.com/catalog_service:latest
-
-
-
-
-
-
-
-
-
 name: CI-CD
 
 on:
   push:
-    branches: [ "master" ]
+    branches:
+      - master
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout Source
         uses: actions/checkout@v4
 
-      - name: Set up Java
+      - name: Display Repository Structure
+        run: |
+          pwd
+          ls -la
+          echo "----------------------"
+          ls -la CatelogServices
+          echo "----------------------"
+          ls -la CatelogServices/target || true
+
+      - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: 17
+          java-version: '17'
 
-      - name: Build with Maven
+      - name: Build Maven Project
         run: mvn clean install -DskipTests
 
-      - name: Login to Azure
+      - name: Verify Target Folder
+        run: |
+          echo "----------------------"
+          ls -la CatelogServices
+          echo "----------------------"
+          ls -la CatelogServices/target
+
+      - name: Azure Login
         uses: azure/login@v2
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
@@ -87,13 +46,17 @@ jobs:
       - name: Login to Azure Container Registry
         run: az acr login --name containerRegistryName1
 
-      - name: Build Docker image
-        run: docker build -t catalog-service ./CatelogServices
+      - name: Build Docker Image
+        run: |
+          docker build \
+            -f CatelogServices/Dockerfile \
+            -t catalog-service:latest \
+            CatelogServices
 
-      - name: Tag Docker image
+      - name: Tag Docker Image
         run: |
           docker tag catalog-service:latest containerregistryname1.azurecr.io/catalog-service:latest
 
-      - name: Push Docker image
+      - name: Push Docker Image
         run: |
           docker push containerregistryname1.azurecr.io/catalog-service:latest

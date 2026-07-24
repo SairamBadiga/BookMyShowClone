@@ -1,3 +1,61 @@
+#name: CI-CD
+#
+#on:
+#  push:
+#    branches: [ "master" ]
+#
+#jobs:
+#  build:
+#    runs-on: ubuntu-latest
+#
+#    steps:
+#      - name: Checkout
+#        uses: actions/checkout@v4
+#
+#      # 🔹 Build Java project
+#      - name: Set up Java
+#        uses: actions/setup-java@v4
+#        with:
+#          distribution: temurin
+#          java-version: 17
+#
+#      - name: Build with Maven
+#        run: mvn clean install -DskipTests
+#
+#      # 🔹 Configure AWS
+#      - name: Configure AWS credentials
+#        uses: aws-actions/configure-aws-credentials@v4
+#        with:
+#          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+#          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+#          aws-region: ap-south-1
+#
+#      # 🔹 Login to ECR
+#      - name: Login to Amazon ECR
+#        run: |
+#          aws ecr get-login-password --region ap-south-1 \
+#          | docker login --username AWS --password-stdin 768396679030.dkr.ecr.ap-south-1.amazonaws.com
+#
+#      # 🔹 Build Docker image
+#      - name: Build Docker image
+#        run: docker build -t catalog-service ./CatelogServices
+#
+#      # 🔹 Tag image
+#      - name: Tag Docker image
+#        run: docker tag catalog-service:latest 768396679030.dkr.ecr.ap-south-1.amazonaws.com/catalog_service:latest
+#
+#      # 🔹 Push to ECR
+#      - name: Push to ECR
+#        run: docker push 768396679030.dkr.ecr.ap-south-1.amazonaws.com/catalog_service:latest
+
+
+
+
+
+
+
+
+
 name: CI-CD
 
 on:
@@ -12,7 +70,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # 🔹 Build Java project
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
@@ -22,28 +79,21 @@ jobs:
       - name: Build with Maven
         run: mvn clean install -DskipTests
 
-      # 🔹 Configure AWS
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
+      - name: Login to Azure
+        uses: azure/login@v2
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
-          aws-region: ap-south-1
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      # 🔹 Login to ECR
-      - name: Login to Amazon ECR
-        run: |
-          aws ecr get-login-password --region ap-south-1 \
-          | docker login --username AWS --password-stdin 768396679030.dkr.ecr.ap-south-1.amazonaws.com
+      - name: Login to Azure Container Registry
+        run: az acr login --name containerRegistryName1
 
-      # 🔹 Build Docker image
       - name: Build Docker image
         run: docker build -t catalog-service ./CatelogServices
 
-      # 🔹 Tag image
       - name: Tag Docker image
-        run: docker tag catalog-service:latest 768396679030.dkr.ecr.ap-south-1.amazonaws.com/catalog-service:latest
+        run: |
+          docker tag catalog-service:latest containerregistryname1.azurecr.io/catalog-service:latest
 
-      # 🔹 Push to ECR
-      - name: Push to ECR
-        run: docker push 768396679030.dkr.ecr.ap-south-1.amazonaws.com/catalog-service:latest
+      - name: Push Docker image
+        run: |
+          docker push containerregistryname1.azurecr.io/catalog-service:latest
